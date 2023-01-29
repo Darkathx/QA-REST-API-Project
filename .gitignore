@@ -6,6 +6,7 @@ node_modules
 
 #Ignore files related to api and db keys
 .env
+config
 
 #Ignore all txt files
 

@@ -1,8 +1,9 @@
 const express = require("express");
-const {register} = require("../controllers/auth.js");
+const {register, errorTest} = require("../controllers/auth.js");
 const router = express.Router();
 
-router.get("/register", register);
+router.post("/register", register);
+router.get("/error", errorTest);
 
 
 
