@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 const Schema = mongoose.Schema;
 const userSchema = new Schema({
     name: {
@@ -9,7 +11,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: [true, "Please enter an email!"],
-        unique: [true, "Please try a different email!"],
+        unique: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w+)+$/, 'Please provide a valid email address'],
 
     },
@@ -58,6 +60,33 @@ const userSchema = new Schema({
     }
 
 
+});
+
+userSchema.methods.generateJWTFromUser = function() {
+    const {JWT_KEY, JWT_EXPIRE} = process.env;
+    const payload = {
+        id: this.id,
+        name: this.name,
+        
+    };
+    const token = jwt.sign(payload, JWT_KEY, {expiresIn: JWT_EXPIRE});
+    return token;
+};
+
+userSchema.pre("save", function(next) {
+    //If PW didn't change
+    if(!this.isModified("password")) {
+        next();
+    }
+    const saltRounds = 12;
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+        if(err) next(err);
+        bcrypt.hash(this.password, salt, function(err, hash) {
+            if(err) next(err);
+            this.password = hash;
+            next();
+        }.bind(this));
+    }.bind(this));
 });
 
 module.exports = mongoose.model("User", userSchema);

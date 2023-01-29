@@ -1,34 +1,30 @@
 const User = require("../models/User");
 const CustomError = require("../helpers/error/CustomError");
+const {sendJwtToClient, } = require('../helpers/authorization/tokenHelpers');
 require("express-async-errors");
 
 const register = async (req, res, next) => {
-    //POST DATA
-    const name = 'SSC';
-    const email = "def@gmail.com";
-    const password = "1267";
-
-
+    const {name, email, password, role} = req.body;
     const createdUser = await User.create({
         name,
         email,
         password,
+        role,
     });
-    res
-    .status(200)
-    .json({
-        success: true,
-        data: createdUser,
+    sendJwtToClient(createdUser, res);
 
-    });
 };
 
-const errorTest = (req, res, next) => {
-    return next(new TypeError("TypeErr"));
+const tokenTest = async (req, res, next) => {
+
+    res
+    .json({
+        success: true,
+        message: "Welcome",
+    });
 };
 
 module.exports = {
     register,
-    errorTest,
-
+    tokenTest,
 };
