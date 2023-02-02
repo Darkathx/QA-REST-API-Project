@@ -14,8 +14,8 @@ const checkUserExists = async (req, res, next) => {
 };
 
 const checkQuestionExists = async (req, res, next) => {
-    const id = req.params.id;
-    const question = await Question.findById(id);
+    const question_id = req.params.id || req.params.question_id;
+    const question = await Question.findById(question_id);
     if(!question) {
         return next(new CustomError("There is no such question with that id", 404));
     }
