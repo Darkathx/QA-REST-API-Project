@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require("../models/User");
 const CustomError = require('../helpers/error/CustomError');
+const Question = require('../models/Question');
 require("express-async-errors");
 
 const banUser = async (req, res, next) => {
@@ -33,4 +34,20 @@ const deleteUser = async (req, res, next) => {
     });
 };
 
-module.exports = {banUser, deleteUser, };
+const deleteQuestionWithAdminRights = async(req, res, next) => {
+    const id = req.params.id;
+    const deletedQuestion = await Question.findByIdAndDelete(id);
+    if(!deletedQuestion) {
+        return next(new CustomError("Question Could Not Been Deleted", 500));
+    }
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Question successfully deleted",
+
+    })
+}
+
+module.exports = {banUser, deleteUser, deleteQuestionWithAdminRights, };

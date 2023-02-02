@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const crypto = require('crypto');
+const Question = require("./Question");
 
 
 const Schema = mongoose.Schema;
@@ -114,6 +115,10 @@ userSchema.pre("save", function(next) {
             next();
         }.bind(this));
     }.bind(this));
+});
+
+userSchema.post("deleteOne", async function() {
+    await Question.deleteMany({user: this._id});
 });
 
 module.exports = mongoose.model("User", userSchema);

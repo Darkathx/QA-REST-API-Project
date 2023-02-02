@@ -2,6 +2,7 @@ const CustomError = require('../../helpers/error/CustomError');
 const jwt = require("jsonwebtoken");
 const {isTokenIncluded, getAccessTokenFromHeader} = require('../../helpers/authorization/tokenHelpers');
 const User = require('../../models/User');
+const Question = require('../../models/Question');
 require("express-async-errors");
 
 
@@ -33,8 +34,22 @@ const getAdminRights = async (req, res, next) => {
     next();
 };
 
+const getQuestionOwnerAccess = async (req, res, next) => {
+    const userId = req.user.id;
+    const questionId = req.params.id;
+
+    const question = await Question.findById(questionId); 
+
+    if(question.user != userId) {
+        return next(new CustomError("Only question owner can edit", 403));
+    }
+
+    next();
+}
+
 module.exports = {
     getAccessToRoute,
     getAdminRights,
+    getQuestionOwnerAccess,
 
 };
