@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const CustomError = require('../helpers/error/CustomError');
+const Question = require('./Question');
 const Schema = mongoose.Schema;
 const AnswerSchema = new Schema({
     content : {
@@ -32,6 +34,19 @@ const AnswerSchema = new Schema({
 
     },
     
+});
+
+AnswerSchema.pre("save", async function(next) {
+    if(!this.isModified("user")) {
+        return next();
+    }
+    const question = await Question.findById(this.question);
+    if(!question) {
+        return next(new CustomError("There is no question with that id", 400));
+    }
+    question.answers.push(this._id);
+    await question.save();
+    return next();
 });
 
 module.exports = mongoose.model("Answer", AnswerSchema);
