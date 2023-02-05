@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const {isTokenIncluded, getAccessTokenFromHeader} = require('../../helpers/authorization/tokenHelpers');
 const User = require('../../models/User');
 const Question = require('../../models/Question');
+const Answer = require('../../models/Answer');
 require("express-async-errors");
 
 
@@ -45,11 +46,23 @@ const getQuestionOwnerAccess = async (req, res, next) => {
     }
 
     next();
-}
+};
+
+const getAnswerOwnerAccess = async (req, res, next) => {
+    const userId = req.user.id;
+    const answerId = req.params.answer_id;
+
+    const answer = await Answer.findById(answerId);
+    if(userId != answer.user) {
+        return next(new CustomError("Only Owner of the Answer Can Edit Answer", 403));
+    }
+    next();
+};
 
 module.exports = {
     getAccessToRoute,
     getAdminRights,
     getQuestionOwnerAccess,
-
+    getAnswerOwnerAccess,
+    
 };

@@ -57,9 +57,66 @@ const getSingleAnswer = async (req, res, next) => {
     })
 };
 
+const editAnswer = async (req, res, next) => {
+    let answer = req.answer;
+    const info = req.body;
+    answer.content = info.content;
+    answer = await answer.save();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        data: answer,
+
+    });
+    
+};
+
+const deleteAnswer = async (req, res, next) => {
+    let answer = req.answer;
+    answer = await answer.remove();
+
+    return res
+    .status(200)
+    .json({
+        success: true,
+        data: answer,
+
+    });
+};
+
+const likeAnswer = async (req, res, next) => {
+    let answer = req.answer;
+    if(answer.likes.includes(req.user.id)) {
+        const index = answer.likes.indexOf(req.user.id);
+        answer.likes.splice(index, 1);
+        answer = await answer.save();
+        return res
+        .status(200)
+        .json({
+            success: true,
+            data: answer,
+
+        });
+    }
+    answer.likes.push(req.user.id);
+    answer = await answer.save();
+    return res
+    .status(200)
+    .json({
+        success: true,
+        data: answer,
+
+    });
+};
+
 module.exports = {
     addNewAnswerToQuestion,
     getAllAnswersFromThisQuestion,
     getSingleAnswer,
+    editAnswer,
+    deleteAnswer,
+    likeAnswer,
 
 };

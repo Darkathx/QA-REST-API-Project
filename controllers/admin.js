@@ -48,6 +48,21 @@ const deleteQuestionWithAdminRights = async(req, res, next) => {
         message: "Question successfully deleted",
 
     })
+};
+
+const deleteAnswerWithAdminRights = async (req, res, next) => {
+    const answer = req.answer;
+    const deletedAnswer = await answer.remove();
+    if(!deletedAnswer) {
+        return next(new CustomError("Answer Could Not Been Deleted", 500));
+    }
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Answer successfully deleted",
+        
+    })
 }
 
-module.exports = {banUser, deleteUser, deleteQuestionWithAdminRights, };
+module.exports = {banUser, deleteUser, deleteQuestionWithAdminRights, deleteAnswerWithAdminRights, };

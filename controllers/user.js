@@ -16,12 +16,11 @@ const getSingleUser = async (req, res, next) => {
 };
 
 const getAllUsers = async(req, res, next) => {
-    const users = await User.find();
     return res
     .status(200)
     .json({
         success: true,
-        data: users,
+        data: res.query,
 
     });
 };

@@ -45,8 +45,17 @@ AnswerSchema.pre("save", async function(next) {
         return next(new CustomError("There is no question with that id", 400));
     }
     question.answers.push(this._id);
+    question.answerCount = question.answers.length;
     await question.save();
     return next();
+});
+
+AnswerSchema.post("remove", async function() {
+    const question = await Question.findById(this.question);
+    const index = question.answers.indexOf(this._id);
+    question.answers.splice(index, 1);
+    question.answerCount = question.answers.length;
+    await question.save();
 });
 
 module.exports = mongoose.model("Answer", AnswerSchema);

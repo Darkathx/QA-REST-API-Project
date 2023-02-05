@@ -20,27 +20,15 @@ const askNewQuestion = async (req, res, next) => {
 };
 
 const getAllQuestions = async (req, res, next) => {
-    const questions = await Question.find();
-
-    res
+    return res
     .status(200)
-    .json({
-        success: true,
-        data: questions,
-        
-    });
+    .json(res.queryResults);
 };
 
 const getSingleQuestion = async (req, res, next) => {
-    const question = await req.data;
-    
     return res
     .status(200)
-    .json({
-        success: true,
-        data: question,
-
-    });
+    .json(res.queryResults);
 };
 
 const editQuestion = async (req, res, next) => {
@@ -80,6 +68,7 @@ const likeQuestion = async (req, res, next) => {
         // return next(new CustomError("You already liked this question", 400));
         const index = question.likes.indexOf(req.user.id);
         question.likes.splice(index, 1);
+        question.likeCount = question.likes.length;
         question = await question.save();
 
         return res
@@ -92,6 +81,7 @@ const likeQuestion = async (req, res, next) => {
         });
     }
     question.likes.push(req.user.id);
+    question.likeCount = question.likes.length;
     question = await question.save();
 
     return res
